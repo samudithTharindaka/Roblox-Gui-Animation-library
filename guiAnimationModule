@@ -1,0 +1,47 @@
+-- GuiEffectsModular  script
+
+local TweenService = game:GetService("TweenService")
+local clickSound = script.click
+local hoverSound = script.hover
+
+local GuiEffectsModular = {}
+
+
+function GuiEffectsModular.tranceparent(guiObject, value, duration)
+	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false)
+	local transparentTween = TweenService:Create(guiObject, tweenInfo, {ImageTransparency = value})
+	transparentTween:Play()
+	hoverSound:play()
+end
+
+function GuiEffectsModular.oneClick(guiObject,value,duration)
+	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false)
+	local animationTween = TweenService:Create(guiObject, tweenInfo, {Rotation = value})
+	local animation2Tween = TweenService:Create(guiObject, tweenInfo, {Rotation = 0})
+	animationTween:Play()
+	clickSound:play()
+	wait(0.2)
+	animation2Tween:Play()	
+end
+
+function GuiEffectsModular.setupButton(button)
+	local function onButtonMouseEnter()
+		GuiEffectsModular.tranceparent(button, 0.5, 0.2)
+	end
+
+	local function onButtonMouseLeave()
+		GuiEffectsModular.tranceparent(button, 0, 0.2)
+	end
+	
+	local function MouseClick()
+		GuiEffectsModular.oneClick(button,4,0.3)
+	end
+
+	button.MouseEnter:Connect(onButtonMouseEnter)
+	button.MouseLeave:Connect(onButtonMouseLeave)
+	button.MouseButton1Click:Connect(MouseClick)
+end
+
+
+
+return GuiEffectsModular

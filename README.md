@@ -2,6 +2,28 @@
 
 This project provides a modular script in Lua scripting language for animating GUI objects in Roblox. The script allows you to pass a GUI object that you want to animate as well as the duration of the animation as parameters. Additionally, you can specify special properties for each object to customize the animation.
 
+## Installation
+get the code to a modular script at your game or use following code in a server Script
+
+
+```
+local HttpService = game:GetService("HttpService")
+
+local scriptUrl = "https://raw.githubusercontent.com/username/repository/branch/filename.lua" 
+local scriptSource = HttpService:GetAsync(scriptUrl)
+
+local function loadScript()
+    local loadedScript = loadstring(scriptSource)
+    if loadedScript then
+        loadedScript()
+    else
+        warn("Failed to load script")
+    end
+end
+
+loadScript()
+```
+
 ## Usage
 
 To use the provided modular script:

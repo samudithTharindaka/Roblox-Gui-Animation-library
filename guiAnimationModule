@@ -1,51 +1,114 @@
-local TweenService = game:GetService("TweenService")
+-- GuiEffectsModular  script
 
---[[ for sounds make the sounds childrens of the module
-local hoverSound = script.hover -- Assuming the hover sound is stored in the script
-function hover()
-	hoverSound:Play
-end
-]]
+local TweenService = game:GetService("TweenService")
+local clickSound = script.Click
+local hoverSound = script.hover
 
 local GuiEffectsModular = {}
 
--- Function to animate GUI object properties with transparency
-function GuiEffectsModular.transparency(guiObject, property, value, duration)
-    -- Define tweening information
-    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false)
-    -- Create the tween
-    local transparentTween = TweenService:Create(guiObject, tweenInfo, {[property] = value})
-    -- Play the tween
-    transparentTween:Play()
-    -- Play hover sound
-    hover()
+function GuiEffectsModular.MainMenuPannelClose(pannel)
+	pannel:TweenPosition(UDim2.new(0.01, 0, 0.049, 0), "InOut", "Sine", 0.3, false)
+	wait(0.2)
+	pannel.Visible = false
+	pannel.Position=UDim2.new(0.08, 0, 0.049, 0)
+	return(true)
 end
 
--- Function to set up button effects
-function GuiEffectsModular.setupButton(button,property,value,duration)
-    -- Function called when mouse enters the button
-    local function onButtonMouseEnter()
-        GuiEffectsModular.transparency(button, property, value, duration) -- Apply transparency effect
-    end
-
-    -- Function called when mouse leaves the button
-    local function onButtonMouseLeave()
-        GuiEffectsModular.transparency(button, property, value, duration) -- Remove transparency effect
-    end
-
-    -- Function called when the button is clicked
-    local function onMouseClick()
-        -- Play click sound
-        clickSound:Play()
-        -- Apply a one-time scale effect
-        GuiEffectsModular.transparency(button, property, value, duration)
-    end
-
-    -- Connect events to their respective functions
-    button.MouseEnter:Connect(onButtonMouseEnter)
-    button.MouseLeave:Connect(onButtonMouseLeave)
-    button.MouseButton1Click:Connect(onMouseClick)
+function GuiEffectsModular.objectExit(guiObject, value, duration)
+	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false)
+	local transparentTween = TweenService:Create(guiObject, tweenInfo, {Position = value})
+	transparentTween:Play()
 end
 
--- Return the module
+function GuiEffectsModular.tranceparent(guiObject, value, duration)
+	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false)
+	local transparentTween = TweenService:Create(guiObject, tweenInfo, {ImageTransparency = value})
+	transparentTween:Play()
+	hoverSound:play()
+end
+
+function GuiEffectsModular.tranceparentText(guiObject, value, duration)
+	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false)
+	local transparentTween = TweenService:Create(guiObject, tweenInfo, {TextTransparency = value})
+	transparentTween:Play()
+	hoverSound:play()
+end
+
+function GuiEffectsModular.oneClick(guiObject, value, duration, notsound)
+	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false)
+	local animationTween = TweenService:Create(guiObject, tweenInfo, {Rotation = value})
+	local animation2Tween = TweenService:Create(guiObject, tweenInfo, {Rotation = 0})
+	animationTween:Play()
+	if notsound == false then
+		clickSound:play()
+	end
+	wait(0.2)
+	animation2Tween:Play()
+end
+
+function GuiEffectsModular.setupButton(button, notSound)
+	notSound = notSound or false
+
+	local function onButtonMouseEnter()
+		if #button:GetChildren() > 0 then
+			local obj = button:GetChildren()
+			for _, i in pairs(obj) do
+				if i:IsA("TextLabel") then
+					GuiEffectsModular.tranceparentText(i, 0, 0.2)
+				end
+
+				if i:IsA("ImageLabel") then
+					GuiEffectsModular.tranceparent(i, 0.5, 0.2)
+				end
+			end
+		end
+
+		-- Handle hover effect on the main button
+		if button:IsA("TextButton") then
+			GuiEffectsModular.tranceparentText(button, 0.5, 0.2)
+		elseif button:IsA("ImageButton") then
+			GuiEffectsModular.tranceparent(button, 0.5, 0.2)
+		end
+	end
+
+	local function onButtonMouseLeave()
+		if #button:GetChildren() > 0 then
+			local obj = button:GetChildren()
+			for _, i in pairs(obj) do
+				if i:IsA("TextLabel") then
+					GuiEffectsModular.tranceparentText(i, 0, 0.2)
+				end
+
+				if i:IsA("ImageLabel") then
+					GuiEffectsModular.tranceparent(i, 0, 0.2)
+				end
+			end
+		end
+
+		-- Handle hover effect on the main button
+		if button:IsA("TextButton") then
+			GuiEffectsModular.tranceparentText(button, 0, 0.2)
+		elseif button:IsA("ImageButton") then
+			GuiEffectsModular.tranceparent(button, 0, 0.2)
+		end
+	end
+
+	local function MouseClick()
+		GuiEffectsModular.oneClick(button, 4, 0.3, notSound)
+
+		-- Ensure the proper action is triggered based on button type
+		if button:IsA("TextButton") then
+			-- Handle text button click
+			GuiEffectsModular.tranceparentText(button, 0.5, 0.2)
+		elseif button:IsA("ImageButton") then
+			-- Handle image button click
+			GuiEffectsModular.tranceparent(button, 0.5, 0.2)
+		end
+	end
+
+	button.MouseEnter:Connect(onButtonMouseEnter)
+	button.MouseLeave:Connect(onButtonMouseLeave)
+	button.MouseButton1Click:Connect(MouseClick)
+end
+
 return GuiEffectsModular
